@@ -32,7 +32,7 @@ protected:
     virtual void serverStartFailed() = 0;
 
 public:
-    virtual ~Server() {}
+    virtual ~Server();
 
     void start();
     void stop();

@@ -9,8 +9,8 @@ namespace Packets {
 class PacketHeader : public Serializable {
 public:
     unsigned char rakID = 0x53;
-    unsigned short remoteConnectionType;
-    unsigned long packetID;
+    uint16_t remoteConnectionType;
+    uint32_t packetID;
     unsigned char pad = 0;
 
     PacketHeader();

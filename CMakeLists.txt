@@ -11,6 +11,8 @@ set(OPENUNIVERSE_SOURCES
     src/core/LUPacket.cpp
     src/core/Server.cpp
     src/core/Utils.cpp
+    src/core/Logger.cpp
+    src/core/Database.cpp
     src/core/packets/PacketHeader.cpp
     src/core/packets/Handshake.cpp
 
@@ -20,6 +22,9 @@ set(OPENUNIVERSE_SOURCES
 
 set(LIBS
     RakNet
+    pq
+    pqxx
+    sodium
     pthread
 )
 

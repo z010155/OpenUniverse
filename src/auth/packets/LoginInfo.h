@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../../core/LUPacket.h"
+#include "../../core/Types.h"
 #include "../../core/Utils.h"
 
 using namespace OpenUniverse::Core;
@@ -16,36 +17,36 @@ public:
     // Client
     std::wstring username;
     std::wstring password;
-    unsigned short languageID;
+    uint16_t languageID;
     unsigned char platformType;
     std::wstring clientMemoryInfo;
     std::wstring clientGraphicsInfo;
-    unsigned long processorCores;
-    unsigned long processorType;
-    unsigned short processorLevel;
-    unsigned short processorRevision;
-    unsigned long unknown1;
-    unsigned long osMajorVersion;
-    unsigned long osMinorVersion;
-    unsigned long osBuildNumber;
-    unsigned long platformID;
+    uint32_t processorCores;
+    uint32_t processorType;
+    uint16_t processorLevel;
+    uint16_t processorRevision;
+    uint32_t unknown1;
+    uint32_t osMajorVersion;
+    uint32_t osMinorVersion;
+    uint32_t osBuildNumber;
+    uint32_t platformID;
 
     // Server
     unsigned char loginStatus;
-    unsigned short clientVersionMajor = 1;
-    unsigned short clientVersionCurrent = 10;
-    unsigned short clientVersionMinor = 64;
+    uint16_t clientVersionMajor = 1;
+    uint16_t clientVersionCurrent = 10;
+    uint16_t clientVersionMinor = 64;
     std::wstring userToken;
     std::string serverInstanceIP;
     std::string chatInstanceIP;
-    unsigned short serverInstancePort;
-    unsigned short chatInstancePort;
+    uint16_t serverInstancePort;
+    uint16_t chatInstancePort;
     std::string ip = "127.0.0.1";
     std::string locale = "US";
     bool firstLoginAfterSubscribing = false;
     bool freeToPlay = false;
     std::wstring errorMessage = L"";
-    unsigned long stampCount = 0;
+    uint32_t stampCount = 0;
 
     LoginInfo();
 

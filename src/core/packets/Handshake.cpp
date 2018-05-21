@@ -18,7 +18,7 @@ void Handshake::serialize(RakNet::BitStream* stream)
     LUPacket::serialize(stream);
 
     stream->Write(gameVersion);
-    stream->Write((unsigned long)0x93);
+    stream->Write((uint32_t)0x93);
     stream->Write(remoteConnectionType);
     stream->Write(pid);
     stream->Write(port);

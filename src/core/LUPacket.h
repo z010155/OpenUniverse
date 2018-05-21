@@ -7,8 +7,8 @@ namespace OpenUniverse {
 namespace Core {
 class LUPacket : public Serializable {
 protected:
-    unsigned short connectionType;
-    unsigned long packetID;
+    uint16_t connectionType;
+    uint32_t packetID;
 
 public:
     void serialize(RakNet::BitStream*);

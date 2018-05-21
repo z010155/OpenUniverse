@@ -11,11 +11,11 @@ namespace Core {
 namespace Packets {
 class Handshake : public LUPacket {
 public:
-    unsigned long gameVersion;
-    unsigned long unknown1 = 0x93;
-    unsigned long remoteConnectionType;
-    unsigned long pid;
-    unsigned short port = 0xff;
+    uint32_t gameVersion = 171022;
+    uint32_t unknown1 = 0x93;
+    uint32_t remoteConnectionType;
+    uint32_t pid; 
+    uint16_t port = 0xff;
     std::string ip = "127.0.0.1";
 
     Handshake();

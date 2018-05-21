@@ -5,6 +5,8 @@ namespace Auth {
 namespace Packets {
 LoginInfo::LoginInfo()
 {
+    connectionType = ConnectionType::SERVER;
+    packetID = AuthPacket::LOGIN_INFO;
 }
 
 LoginInfo::~LoginInfo()
@@ -13,6 +15,8 @@ LoginInfo::~LoginInfo()
 
 void LoginInfo::serialize(RakNet::BitStream* stream)
 {
+    LUPacket::serialize(stream);
+
     stream->Write(loginStatus);
     Utils::writeString(stream, "Talk_Like_A_Pirate", 33);
 
@@ -34,34 +38,36 @@ void LoginInfo::serialize(RakNet::BitStream* stream)
     Utils::writeString(stream, ip, 33);
     Utils::writeString(stream, "00000000-0000-0000-0000-000000000000", 37);
 
-    stream->Write((unsigned long)0);
+    stream->Write((uint32_t)0);
 
     Utils::writeString(stream, locale, 3);
 
     stream->Write(firstLoginAfterSubscribing);
     stream->Write(freeToPlay);
 
-    stream->Write((unsigned long long)0);
+    stream->Write((uint64_t)0);
 
-    stream->Write((unsigned short)errorMessage.size());
-    Utils::writeWString(stream, errorMessage, (unsigned int)errorMessage.size());
+    stream->Write((uint16_t)errorMessage.length());
+
+    if (errorMessage.length())
+        Utils::writeWString(stream, errorMessage, (unsigned int)errorMessage.length());
 
     stream->Write(stampCount);
-    // FIXME: add stamp data if needed
+    // FIXME: add stamp data (if needed)
 }
 
 LoginInfo* LoginInfo::deserialize(RakNet::BitStream* stream)
 {
     auto info = new LoginInfo();
 
-    info->username = Utils::readWString(stream, 33);
-    info->password = Utils::readWString(stream, 41);
+    info->username = Utils::readWString(stream, 66); // 33
+    info->password = Utils::readWString(stream, 82); // 41
 
     stream->Read(info->languageID);
     stream->Read(info->platformType);
 
-    info->clientMemoryInfo = Utils::readWString(stream, 256);
-    info->clientGraphicsInfo = Utils::readWString(stream, 128);
+    info->clientMemoryInfo = Utils::readWString(stream, 512); // 256
+    info->clientGraphicsInfo = Utils::readWString(stream, 256); // 128
 
     stream->Read(info->processorCores);
     stream->Read(info->processorType);

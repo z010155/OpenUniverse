@@ -4,16 +4,20 @@
 #include <string>
 
 #include "auth/AuthServer.h"
+#include "core/Database.h"
 
 using Server = OpenUniverse::Core::Server;
 using AuthServer = OpenUniverse::Auth::AuthServer;
+using Database = OpenUniverse::Core::Database;
 
 int main()
 {
+    Database* db = new Database("dbname=openuniverse user=root password=root");
+
     std::vector<Server*> servers;
     std::vector<std::thread*> threads;
 
-    servers.push_back(new AuthServer());
+    servers.push_back(new AuthServer(db));
 
     for (auto server : servers) {
         auto serverThread = new std::thread([server]()
@@ -29,6 +33,7 @@ int main()
     auto quit = false;
 
     while (!quit) {
+        std::cout << "> ";
         std::string input;
         std::cin >> input;
 
