@@ -1,8 +1,6 @@
 #ifndef __LU_AUTHSERVER_H__
 #define __LU_AUTHSERVER_H__
 
-#include <cryptopp/sha.h>
-
 #include "raknet/MessageIdentifiers.h"
 
 #include "../core/Server.h"
