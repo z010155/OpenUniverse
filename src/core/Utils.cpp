@@ -88,11 +88,11 @@ std::wstring Utils::readWString(RakNet::BitStream* stream, uint32_t size = 33)
     // auto end = false;
 
     for (uint32_t i = 0; i < size; i++) {
-        unsigned char character;
+        char character;
 
         stream->Read(character);
 
-        if (character <= 0)
+        if (character == 0)
             continue;
             // end = true;
 
@@ -116,7 +116,7 @@ std::string Utils::readString(RakNet::BitStream* stream, uint32_t size = 33)
 
         stream->Read(character);
 
-        if (character <= 0)
+        if (character == 0)
             continue;
             // end = true;
 
@@ -129,16 +129,14 @@ std::string Utils::readString(RakNet::BitStream* stream, uint32_t size = 33)
 
 void Utils::writeWString(RakNet::BitStream* stream, std::wstring str, unsigned int size = 33)
 {
-    for (unsigned int i = 0; i < size; i++) {
-        stream->Write(i < str.length() ? str.at(i) : (unsigned char)0);
-    }
+    for (unsigned int i = 0; i < size; i++)
+        stream->Write(i < str.length() ? (char)str[i] : (char)0);
 }
 
 void Utils::writeString(RakNet::BitStream* stream, std::string str, unsigned int size = 33)
 {
-    for (unsigned int i = 0; i < size; i++) {
-        stream->Write(i < str.length() ? str.at(i) : (char)0);
-    }
+    for (unsigned int i = 0; i < size; i++)
+        stream->Write(i < str.length() ? (char)str[i] : (char)0);
 }
 }
 }

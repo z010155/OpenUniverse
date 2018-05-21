@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(OpenUniverse CXX)
 
-include_directories("include/raknet")
+include_directories("include")
 add_subdirectory("include/raknet")
 
 set(OPENUNIVERSE_SOURCES
