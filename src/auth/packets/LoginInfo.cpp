@@ -42,8 +42,8 @@ void LoginInfo::serialize(RakNet::BitStream* stream)
 
     Utils::writeString(stream, locale, 3);
 
-    stream->Write(firstLoginAfterSubscribing);
-    stream->Write(freeToPlay);
+    stream->Write((unsigned char)firstLoginAfterSubscribing);
+    stream->Write((unsigned char)freeToPlay);
 
     stream->Write((uint64_t)0);
 

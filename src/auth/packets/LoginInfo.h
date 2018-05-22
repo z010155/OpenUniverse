@@ -46,7 +46,7 @@ public:
     bool firstLoginAfterSubscribing = false;
     bool freeToPlay = false;
     std::wstring errorMessage = L"";
-    uint32_t stampCount = 0;
+    uint32_t stampCount = 4;
 
     LoginInfo();
 
