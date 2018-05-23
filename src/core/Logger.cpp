@@ -29,7 +29,7 @@ void Logger::error(std::string str)
 {
     auto log = "[" + name + "] (ERR) " + str;
 
-    std::cout << "<" << std::this_thread::get_id() << "> " << log << std::endl;
+    std::cerr << "<" << std::this_thread::get_id() << "> " << log << std::endl;
 }
 }
 }

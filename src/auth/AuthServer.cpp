@@ -1,7 +1,5 @@
 #include "AuthServer.h"
 
-#include <fstream>
-
 namespace OpenUniverse {
 namespace Auth {
 AuthServer::AuthServer(Database* database) : Server()
@@ -58,11 +56,13 @@ void AuthServer::handleLoginPacket(RakNet::BitStream* stream, Packet* p)
 
     packet->loginStatus = 0x01; // account ? 0x01 : 0x06;
 
+    auto worldConf = cfg["world"].as<YAML::Node>();
+
     // FIXME: add a config
     packet->userToken = L"test";
-    packet->serverInstanceIP = "127.0.0.1";
+    packet->serverInstanceIP = worldConf["host"].as<std::string>();
     packet->chatInstanceIP = "127.0.0.1";
-    packet->serverInstancePort = 2001;
+    packet->serverInstancePort = worldConf["port"].as<int>();
     packet->chatInstancePort = 2002;
  
     send(packet, p->systemAddress, false);

@@ -8,6 +8,8 @@
 #include <unistd.h>
 #endif
 
+#include <yaml-cpp/yaml.h>
+
 #include "raknet/BitStream.h"
 #include "raknet/RakSleep.h"
 #include "raknet/RakNetworkFactory.h"
@@ -22,6 +24,8 @@ class Server {
 protected:
     int port;
     bool active = false;
+
+    YAML::Node cfg = YAML::LoadFile("config.yml");
 
     RakPeerInterface* server;
 

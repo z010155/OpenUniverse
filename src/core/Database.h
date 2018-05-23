@@ -7,8 +7,10 @@
 #include <string>
 #include <exception>
 #include <random>
+#include <vector>
 
 #include "db/Account.h"
+#include "db/Character.h"
 
 namespace OpenUniverse {
 namespace Core {
@@ -20,12 +22,16 @@ private:
 public:
     Database(std::string);
 
-    virtual ~Database();
+    ~Database();
 
     void createAccount(std::string, std::string);
 
     DB::Account* authenticate(std::string, std::string);
     DB::Account* getAccount(std::string);
+    DB::Account* getAccount(uint64_t);
+
+    std::vector<DB::Character*> getCharacters(std::string);
+    DB::Character* getCharacter(int64_t);
 };
 }
 }

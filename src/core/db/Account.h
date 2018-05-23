@@ -1,5 +1,5 @@
-#ifndef __LU_DB_USER_H__
-#define __LU_DB_USER_H__
+#ifndef __LU_DB_ACCOUNT_H__
+#define __LU_DB_ACCOUNT_H__
 
 #include <string>
 

@@ -26,11 +26,12 @@ CREATE TABLE IF NOT EXISTS characters (
     playtime            BIGINT NOT NULL DEFAULT 0,
     emotes              INT[] NOT NULL DEFAULT '{}',
     worlds              INT[] NOT NULL DEFAULT '{}',
+    items               INT[] NOT NULL DEFAULT '{}',
     level               INT NOT NULL DEFAULT 1,
 
 -- appearance
     eyebrow_style       INT NOT NULL,
-    eye_styte           INT NOT NULL,
+    eye_style           INT NOT NULL,
     hair_color          INT NOT NULL,
     hair_style          INT NOT NULL,
     pants_color         INT NOT NULL,

@@ -18,6 +18,9 @@ set(OPENUNIVERSE_SOURCES
 
     src/auth/AuthServer.cpp
     src/auth/packets/LoginInfo.cpp
+
+    src/world/WorldServer.cpp
+    src/world/packets/MinifigureList.cpp
 )
 
 set(LIBS
@@ -26,6 +29,7 @@ set(LIBS
     pqxx
     sodium
     pthread
+    yaml-cpp
 )
 
 add_executable(${PROJECT_NAME} ${OPENUNIVERSE_SOURCES})

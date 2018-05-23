@@ -1,0 +1,7 @@
+chat:
+  host: 127.0.0.1
+  port: 2001
+
+world:
+  host: 127.0.0.1
+  port: 2002
