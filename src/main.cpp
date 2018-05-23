@@ -17,7 +17,13 @@ using Database = OpenUniverse::Core::Database;
 int main()
 {
     auto cfg = YAML::LoadFile("config.yml");
-    auto db = new Database("dbname=openuniverse user=root password=root");
+    auto dbConf = cfg["db"].as<YAML::Node>();
+
+    auto database = dbConf["database"].as<std::string>();
+    auto user = dbConf["user"].as<std::string>();
+    auto password = dbConf["password"].as<std::string>();
+
+    auto db = new Database("dbname=" + database + " user=" + user + " password=" + password);
 
     std::vector<Server*> servers;
     std::vector<std::thread*> threads;

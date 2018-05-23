@@ -1,3 +1,8 @@
+db:
+  database: openuniverse
+  user: root
+  password: root
+
 chat:
   host: 127.0.0.1
   port: 2001
