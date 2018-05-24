@@ -29,6 +29,9 @@ public:
     unsigned int luScore;
     uint64_t playtime;
     unsigned int level;
+    std::vector<unsigned int> emotes;
+    std::vector<uint16_t> visitedWorlds;
+    std::vector<uint32_t> items;
 
     uint32_t eyebrowStyle;
     uint32_t eyeStyle;
@@ -40,10 +43,6 @@ public:
     uint32_t shirtStyle;
     uint32_t lh;
     uint32_t rh;
-
-    uint32_t items[];
-    uint16_t visitedWorlds[];
-    unsigned int emotes[];
 };
 }
 }

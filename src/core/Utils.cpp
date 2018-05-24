@@ -8,13 +8,19 @@ Utils::~Utils()
 
 // https://stackoverflow.com/questions/15333259/c-stdwstring-to-stdstring-quick-and-dirty-conversion-for-use-as-key-in
 std::string Utils::wstringToString(std::wstring wstr)
-{   
-    return std::string((const char*) &wstr[0], sizeof(wchar_t) / sizeof(char) * wstr.size());
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+    return converter.to_bytes(wstr);
+    // return std::string((const char*) &wstr[0], sizeof(wchar_t) / sizeof(char) * wstr.size());
 }
 
 std::wstring Utils::stringToWString(std::string str)
 {
-    return std::wstring((const wchar_t*) &str[0], sizeof(char)  / sizeof(wchar_t) * str.size());
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+    return converter.from_bytes(str);
+    // return std::wstring((const wchar_t*) &str[0], sizeof(char)  / sizeof(wchar_t) * str.size());
 }
 
 // https://stackoverflow.com/questions/23689733/convert-string-from-utf-8-to-iso-8859-1
@@ -81,8 +87,6 @@ std::string Utils::toUTF8(std::string str)
 
 std::wstring Utils::readWString(RakNet::BitStream* stream, uint32_t size = 33)
 {
-    size *= 2;
-
     std::wstring wstr;
     
     wstr.reserve(size);
@@ -91,8 +95,10 @@ std::wstring Utils::readWString(RakNet::BitStream* stream, uint32_t size = 33)
 
     for (uint32_t i = 0; i < size; i++) {
         unsigned char character;
+        unsigned char zero;
 
         stream->Read(character);
+        stream->Read(zero);
 
         if (character == 0)
             continue;

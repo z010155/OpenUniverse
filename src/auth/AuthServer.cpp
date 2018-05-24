@@ -49,10 +49,10 @@ void AuthServer::handleLoginPacket(RakNet::BitStream* stream, Packet* p)
     auto password = Utils::wstringToString(info->password);
 
     // FIXME: use a less resource heavy algorithm for hashing/checking passwords
-    /*auto account = db->authenticate(user, password);
+    auto account = db->authenticate(user, password);
 
     if (!account)
-        db->createAccount(user, password);*/
+        db->createAccount(user, password);
 
     packet->loginStatus = 0x01; // account ? 0x01 : 0x06;
 

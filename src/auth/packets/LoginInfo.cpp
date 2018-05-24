@@ -60,14 +60,14 @@ LoginInfo* LoginInfo::deserialize(RakNet::BitStream* stream)
 {
     auto info = new LoginInfo();
 
-    info->username = Utils::readWString(stream, 66); // 33
-    info->password = Utils::readWString(stream, 82); // 41
+    info->username = Utils::readWString(stream, 33);
+    info->password = Utils::readWString(stream, 41);
 
     stream->Read(info->languageID);
     stream->Read(info->platformType);
 
-    info->clientMemoryInfo = Utils::readWString(stream, 512); // 256
-    info->clientGraphicsInfo = Utils::readWString(stream, 256); // 128
+    info->clientMemoryInfo = Utils::readWString(stream, 256);
+    info->clientGraphicsInfo = Utils::readWString(stream, 128);
 
     stream->Read(info->processorCores);
     stream->Read(info->processorType);

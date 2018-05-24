@@ -5,12 +5,16 @@ namespace Core {
 Database::Database(std::string connStr)
 {
     conn = new pqxx::connection(connStr);
-    w = new pqxx::work(*conn);
+
+    conn->prepare("create_account", "INSERT INTO accounts VALUES ($1, $2, $3)");
+    conn->prepare("get_accounts_name", "SELECT * FROM accounts WHERE username = $1");
+    conn->prepare("get_accounts_id", "SELECT * FROM accounts WHERE id = $1");
+    conn->prepare("get_characters_account", "SELECT * FROM characters WHERE account = $1");
+    conn->prepare("get_characters_id", "SELECT * FROM characters WHERE id = $1");
 }
 
 Database::~Database()
 {
-    delete w;
     delete conn;
 }
 
@@ -18,23 +22,26 @@ void Database::createAccount(std::string username, std::string password)
 {
     std::mt19937 rng;
     rng.seed(std::random_device()());
-    std::uniform_int_distribution<std::mt19937::result_type> generator(1000000000000000000u, 9999999999999999999u);
+    std::uniform_int_distribution<std::mt19937::result_type> generator(1000000000000000000u, 9223372036854775807u);
 
     uint64_t id = generator(rng);
 
-    char hashed[crypto_pwhash_argon2i_STRBYTES];
+    char hashed[crypto_pwhash_STRBYTES];
 
-    if (crypto_pwhash_argon2i_str(hashed, password.c_str(), password.length(), crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE, crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE))
+    if (crypto_pwhash_str(hashed, password.c_str(), password.length(), crypto_pwhash_OPSLIMIT_SENSITIVE, crypto_pwhash_MEMLIMIT_SENSITIVE))
         throw std::runtime_error("Out of memory");
 
-    w->exec("INSERT INTO accounts VALUES (" + w->quote(id) + "," + w->quote(username) + "," + w->quote(hashed) + ")");
+    pqxx::transaction<> t(*conn);
+
+    t.exec_prepared("create_account", id, username, hashed);
+    t.commit();
 }
 
 DB::Account* Database::authenticate(std::string username, std::string password)
 {
     auto account = getAccount(username);
 
-    if (!account || crypto_pwhash_argon2i_str_verify(account->password.c_str(), password.c_str(), password.length()))
+    if (!account || crypto_pwhash_str_verify(account->password.c_str(), password.c_str(), password.length()))
         return NULL;
 
     return account;
@@ -42,8 +49,10 @@ DB::Account* Database::authenticate(std::string username, std::string password)
 
 DB::Account* Database::getAccount(std::string username)
 {
+    pqxx::transaction<> t(*conn);
+
     auto account = new DB::Account();
-    auto res = w->exec("SELECT * FROM accounts WHERE username = " + w->quote(username));
+    auto res = t.exec_prepared("get_accounts_name", username);
 
     if (res.size()) {
         auto user = res[0];
@@ -52,7 +61,7 @@ DB::Account* Database::getAccount(std::string username)
         account->username = user[1].as<std::string>();
         account->password = user[2].as<std::string>();
 
-        if (user.size() > 3)
+        if (!user[3].is_null())
             account->character = user[3].as<uint64_t>();
     } else
         return NULL;
@@ -62,8 +71,10 @@ DB::Account* Database::getAccount(std::string username)
 
 DB::Account* Database::getAccount(uint64_t id)
 {
+    pqxx::transaction<> t(*conn);
+
     auto account = new DB::Account();
-    auto res = w->exec("SELECT * FROM accounts WHERE id = " + w->quote(id));
+    auto res = t.exec_prepared("get_accounts_id", id);
 
     if (res.size()) {
         auto user = res[0];
@@ -72,7 +83,7 @@ DB::Account* Database::getAccount(uint64_t id)
         account->username = user[1].as<std::string>();
         account->password = user[2].as<std::string>();
 
-        if (user.size() > 3)
+        if (!user[3].is_null())
             account->character = user[3].as<uint64_t>();
     } else
         return NULL;
@@ -82,13 +93,14 @@ DB::Account* Database::getAccount(uint64_t id)
 
 std::vector<DB::Character*> Database::getCharacters(std::string username)
 {
+    pqxx::transaction<> t(*conn);
     std::vector<DB::Character*> characters;
     auto account = getAccount(username);
 
     if (!account)
         return characters;
 
-    auto res = w->exec("SELECT * FROM characters WHERE account = " + w->quote(account->id));
+    auto res = t.exec_prepared("get_characters_account", account->id);
 
     for (auto row : res) {
         auto character = new DB::Character();
@@ -109,9 +121,9 @@ std::vector<DB::Character*> Database::getCharacters(std::string username)
         character->gmLevel = row[13].as<unsigned int>();
         character->luScore = row[14].as<unsigned int>();
         character->playtime = row[15].as<uint64_t>();
-        // character->emotes = row[16].as<std::vector<unsigned int>>();
-        // character->visitedWorlds = row[17].as<std::vector<uint16_t>>();
-        // character->items = row[18].as<std::vector<uint32_t>>();
+        auto emotes = row[16].as_array();
+        auto visitedWorlds = row[17].as_array();
+        auto items = row[18].as_array();
         character->level = row[19].as<unsigned int>();
 
         character->eyebrowStyle = row[20].as<uint32_t>();
@@ -125,6 +137,43 @@ std::vector<DB::Character*> Database::getCharacters(std::string username)
         character->lh = row[28].as<uint32_t>();
         character->rh = row[29].as<uint32_t>();
 
+        character->emotes = std::vector<unsigned int>();
+        character->visitedWorlds = std::vector<uint16_t>();
+        character->items = std::vector<uint32_t>();
+
+        std::pair<pqxx::array_parser::juncture, std::string> emote = emotes.get_next();
+
+        while (emote.first != pqxx::array_parser::juncture::done) {
+            char* base;
+            unsigned int id = strtol(emote.second.c_str(), &base, 0);
+
+            character->emotes.push_back(id);
+
+            emote = emotes.get_next();
+        }
+
+        std::pair<pqxx::array_parser::juncture, std::string> world = visitedWorlds.get_next();
+
+        while (world.first != pqxx::array_parser::juncture::done) {
+            char* base;
+            uint16_t id = strtol(world.second.c_str(), &base, 0);
+
+            character->visitedWorlds.push_back(id);
+
+            world = visitedWorlds.get_next();
+        }
+
+        std::pair<pqxx::array_parser::juncture, std::string> item = items.get_next();
+
+        while (item.first != pqxx::array_parser::juncture::done) {
+            char* base;
+            uint32_t id = strtol(item.second.c_str(), &base, 0);
+
+            character->items.push_back(id);
+
+            item = items.get_next();
+        }
+
         characters.push_back(character);
     }
 
@@ -133,7 +182,8 @@ std::vector<DB::Character*> Database::getCharacters(std::string username)
 
 DB::Character* Database::getCharacter(int64_t id)
 {
-    auto res = w->exec("SELECT * FROM characters WHERE id = " + w->quote(id));
+    pqxx::transaction<> t(*conn);
+    auto res = t.exec_prepared("get_accounts_id", id);
 
     if (!res.size())
         return NULL;
@@ -159,9 +209,9 @@ DB::Character* Database::getCharacter(int64_t id)
     character->gmLevel = row[13].as<unsigned int>();
     character->luScore = row[14].as<unsigned int>();
     character->playtime = row[15].as<uint64_t>();
-    // character->emotes = row[16].as<unsigned int>();
-    // character->visitedWorlds = row[17].as<std::vector<uint16_t>>();
-    // character->items = row[18].as<std::vector<uint32_t>>();
+    auto emotes = row[16].as_array();
+    auto visitedWorlds = row[17].as_array();
+    auto items = row[18].as_array();
     character->level = row[19].as<unsigned int>();
 
     character->eyebrowStyle = row[20].as<uint32_t>();
