@@ -21,6 +21,7 @@ set(OPENUNIVERSE_SOURCES
 
     src/world/WorldServer.cpp
     src/world/packets/MinifigureList.cpp
+    src/world/packets/MinifigureCreate.cpp
 )
 
 set(LIBS

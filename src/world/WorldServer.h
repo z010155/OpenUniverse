@@ -1,6 +1,8 @@
 #ifndef __LU_WORLDSERVER_H__
 #define __LU_WORLDSERVER_H__
 
+#include <fstream>
+
 #include "raknet/MessageIdentifiers.h"
 
 #include "../core/Server.h"
@@ -8,6 +10,7 @@
 #include "../core/Logger.h"
 #include "../core/packets/PacketHeader.h"
 #include "packets/MinifigureList.h"
+#include "packets/MinifigureCreate.h"
 
 using namespace OpenUniverse::Core;
 
@@ -23,6 +26,7 @@ private:
     void serverStartFailed();
 
     void handleCharList(RakNet::BitStream*, Packet*);
+    void handleCharCreate(RakNet::BitStream*, Packet*);
 
 public:
     WorldServer(Database*);

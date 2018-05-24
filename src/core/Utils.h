@@ -2,6 +2,7 @@
 #define __LU_UTILS_H__
 
 #include <string>
+#include <vector>
 #include <locale>
 #include <codecvt>
 #include <algorithm>
@@ -29,6 +30,8 @@ public:
 
     static void writeWString(RakNet::BitStream*, std::wstring, unsigned int);
     static void writeString(RakNet::BitStream*, std::string, unsigned int);
+
+    static std::vector<std::string> split(std::string, std::string);
 };
 }
 }

@@ -34,6 +34,10 @@ void WorldServer::handlePacket(RakNet::BitStream* stream, Packet* p)
                 logger->info("Minifigure list request packet received");
                 handleCharList(stream, p);
                 break;
+            case ClientPacket::MINIFIGURE_CREATE_REQUEST:
+                logger->info("Minifigure create request packet received");
+                handleCharCreate(stream, p);
+                break;
             }
             break;
         break;
@@ -52,6 +56,31 @@ void WorldServer::handleCharList(RakNet::BitStream* stream, Packet* p)
     packet->characters = characters;
 
     send(packet, p->systemAddress, false);
+}
+
+void WorldServer::handleCharCreate(RakNet::BitStream* stream, Packet* p)
+{
+    auto request = World::Packets::MinifigureCreate::deserialize(stream);
+
+    std::ifstream firstStream;
+    std::ifstream middleStream;
+    std::ifstream lastStream;
+    
+    firstStream.open("assets/names/minifigname_first.txt");
+    middleStream.open("assets/names/minifigname_middle.txt");
+    lastStream.open("assets/names/minifigname_last.txt");
+
+    std::string first;
+    std::string middle;
+    std::string last;
+
+    firstStream >> first;
+    middleStream >> middle;
+    lastStream >> last;
+
+    auto firstParts = Utils::split(first, "\n");
+    auto middleParts = Utils::split(middle, "\n");
+    auto lastParts = Utils::split(last, "\n");
 }
 
 void WorldServer::serverStarted()

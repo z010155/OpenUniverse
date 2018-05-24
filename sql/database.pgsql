@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 CREATE TABLE IF NOT EXISTS characters (
     id                  BIGINT PRIMARY KEY,
     name                VARCHAR(66) NOT NULL,
+--  unnaproved_name     VARCHAR(66),
     account             BIGINT REFERENCES accounts(id) ON DELETE CASCADE,
     zone                SMALLINT NOT NULL DEFAULT 0,
 

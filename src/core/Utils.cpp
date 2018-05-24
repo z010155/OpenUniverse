@@ -148,5 +148,21 @@ void Utils::writeString(RakNet::BitStream* stream, std::string str, unsigned int
     for (unsigned int i = 0; i < size; i++)
         stream->Write(i < str.length() ? (char)str[i] : (char)0);
 }
+
+std::vector<std::string> Utils::split(std::string str, std::string delimiter)
+{
+    std::vector<std::string> parts;
+
+    std::string::size_type pos = 0;
+    std::string::size_type prev = 0;
+    while ((pos = str.find(delimiter, prev)) != std::string::npos) {
+        parts.push_back(str.substr(prev, pos - prev));
+        prev = pos + 1;
+    }
+
+    parts.push_back(str.substr(prev));
+
+    return parts;
+}
 }
 }
