@@ -13,6 +13,7 @@ set(OPENUNIVERSE_SOURCES
     src/core/Utils.cpp
     src/core/Logger.cpp
     src/core/Database.cpp
+    src/core/SessionManager.cpp
     src/core/packets/PacketHeader.cpp
     src/core/packets/Handshake.cpp
 

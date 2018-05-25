@@ -2,8 +2,9 @@
 
 namespace OpenUniverse {
 namespace Auth {
-AuthServer::AuthServer(Database* database) : Server()
+AuthServer::AuthServer(SessionManager* sessionManager, Database* database) : Server()
 {
+    sessions = sessionManager;
     db = database;
     port = 1001;
     logger = new Logger("AUTH");
@@ -51,8 +52,12 @@ void AuthServer::handleLoginPacket(RakNet::BitStream* stream, Packet* p)
     // FIXME: use a less resource heavy algorithm for hashing/checking passwords
     auto account = db->authenticate(user, password);
 
-    if (!account)
+    if (!account) {
         db->createAccount(user, password);
+        account = db->getAccount(user);
+    }
+
+    sessions->addSession(p->systemAddress, account);
 
     packet->loginStatus = 0x01; // account ? 0x01 : 0x06;
 

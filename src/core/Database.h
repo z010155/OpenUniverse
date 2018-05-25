@@ -8,7 +8,9 @@
 #include <exception>
 #include <random>
 #include <vector>
+#include <fstream>
 
+#include "Utils.h"
 #include "db/Account.h"
 #include "db/Character.h"
 
@@ -24,6 +26,7 @@ public:
     ~Database();
 
     void createAccount(std::string, std::string);
+    void createCharacter(DB::Account*, std::string, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 
     DB::Account* authenticate(std::string, std::string);
     DB::Account* getAccount(std::string);

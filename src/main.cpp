@@ -8,11 +8,13 @@
 #include "auth/AuthServer.h"
 #include "world/WorldServer.h"
 #include "core/Database.h"
+#include "core/SessionManager.h"
 
 using Server = OpenUniverse::Core::Server;
 using AuthServer = OpenUniverse::Auth::AuthServer;
 using WorldServer = OpenUniverse::World::WorldServer;
 using Database = OpenUniverse::Core::Database;
+using SessionManager = OpenUniverse::Core::SessionManager;
 
 int main()
 {
@@ -24,12 +26,13 @@ int main()
     auto password = dbConf["password"].as<std::string>();
 
     auto db = new Database("dbname=" + database + " user=" + user + " password=" + password);
+    auto sessions = new SessionManager();
 
     std::vector<Server*> servers;
     std::vector<std::thread*> threads;
 
-    servers.push_back(new AuthServer(db));
-    servers.push_back(new WorldServer(db));
+    servers.push_back(new AuthServer(sessions, db));
+    servers.push_back(new WorldServer(sessions, db));
 
     for (auto server : servers) {
         auto serverThread = new std::thread([server]()

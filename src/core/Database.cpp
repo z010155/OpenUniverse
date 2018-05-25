@@ -7,6 +7,7 @@ Database::Database(std::string connStr)
     conn = new pqxx::connection(connStr);
 
     conn->prepare("create_account", "INSERT INTO accounts VALUES ($1, $2, $3)");
+    conn->prepare("create_character", "INSERT INTO characters (id, name, unnaproved_name, account, shirt_color, shirt_style, pants_color, hair_style, hair_color, lh, rh, eyebrow_style, eye_style, mouth_style) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)");
     conn->prepare("get_accounts_name", "SELECT * FROM accounts WHERE username = $1");
     conn->prepare("get_accounts_id", "SELECT * FROM accounts WHERE id = $1");
     conn->prepare("get_characters_account", "SELECT * FROM characters WHERE account = $1");
@@ -34,6 +35,39 @@ void Database::createAccount(std::string username, std::string password)
     pqxx::transaction<> t(*conn);
 
     t.exec_prepared("create_account", id, username, hashed);
+    t.commit();
+}
+
+void Database::createCharacter(DB::Account* account, std::string name, uint32_t predef1, uint32_t predef2, uint32_t predef3, uint32_t shirtColor, uint32_t shirtStyle, uint32_t pantsColor, uint32_t hairStyle, uint32_t hairColor, uint32_t lh, uint32_t rh, uint32_t eyebrowStyle, uint32_t eyeStyle, uint32_t mouthStyle)
+{
+    std::mt19937 rng;
+    rng.seed(std::random_device()());
+    std::uniform_int_distribution<std::mt19937::result_type> generator(1000000000000000000u, 9223372036854775807u);
+    pqxx::transaction<> t(*conn);
+
+    std::ifstream firstStream;
+    std::ifstream middleStream;
+    std::ifstream lastStream;
+
+    firstStream.open("assets/names/minifigname_first.txt");
+    middleStream.open("assets/names/minifigname_middle.txt");
+    lastStream.open("assets/names/minifigname_last.txt");
+
+    std::string first;
+    std::string middle;
+    std::string last;
+
+    firstStream >> first;
+    middleStream >> middle;
+    lastStream >> last;
+
+    auto firstParts = Utils::split(first, "\n");
+    auto middleParts = Utils::split(middle, "\n");
+    auto lastParts = Utils::split(last, "\n");
+
+    auto predefName = firstParts[predef1] + middleParts[predef2] + lastParts[predef3];
+
+    t.exec_prepared("create_character", generator(rng), predefName, name, account->id, shirtColor, shirtStyle, pantsColor, hairStyle, hairColor, lh, rh, eyebrowStyle, eyeStyle, mouthStyle);
     t.commit();
 }
 
@@ -224,6 +258,43 @@ DB::Character* Database::getCharacter(int64_t id)
     character->shirtStyle = row[27].as<uint32_t>();
     character->lh = row[28].as<uint32_t>();
     character->rh = row[29].as<uint32_t>();
+
+    character->emotes = std::vector<unsigned int>();
+    character->visitedWorlds = std::vector<uint16_t>();
+    character->items = std::vector<uint32_t>();
+
+    std::pair<pqxx::array_parser::juncture, std::string> emote = emotes.get_next();
+
+    while (emote.first != pqxx::array_parser::juncture::done) {
+        char* base;
+        unsigned int id = strtol(emote.second.c_str(), &base, 0);
+
+        character->emotes.push_back(id);
+
+        emote = emotes.get_next();
+    }
+
+    std::pair<pqxx::array_parser::juncture, std::string> world = visitedWorlds.get_next();
+
+    while (world.first != pqxx::array_parser::juncture::done) {
+        char* base;
+        uint16_t id = strtol(world.second.c_str(), &base, 0);
+
+        character->visitedWorlds.push_back(id);
+
+        world = visitedWorlds.get_next();
+    }
+
+    std::pair<pqxx::array_parser::juncture, std::string> item = items.get_next();
+
+    while (item.first != pqxx::array_parser::juncture::done) {
+        char* base;
+        uint32_t id = strtol(item.second.c_str(), &base, 0);
+
+        character->items.push_back(id);
+
+        item = items.get_next();
+    }
 
     return character;
 }

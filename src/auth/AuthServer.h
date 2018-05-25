@@ -7,6 +7,7 @@
 #include "../core/Types.h"
 #include "../core/Logger.h"
 #include "../core/Database.h"
+#include "../core/SessionManager.h"
 #include "../core/db/Account.h"
 #include "../core/packets/PacketHeader.h"
 #include "../core/packets/Handshake.h"
@@ -21,6 +22,7 @@ class AuthServer : public Server {
 private:
     Logger* logger;
     Database* db;
+    SessionManager* sessions;
 
     void handlePacket(RakNet::BitStream*, Packet*);
     void serverStarted();
@@ -29,7 +31,7 @@ private:
     void handleLoginPacket(RakNet::BitStream*, Packet*);
 
 public:
-    AuthServer(Database*);
+    AuthServer(SessionManager*, Database*);
 
     virtual ~AuthServer();
 };
