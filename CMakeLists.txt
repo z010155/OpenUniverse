@@ -26,8 +26,8 @@ set(OPENUNIVERSE_SOURCES
 
 set(LIBS
     RakNet
-    pq
     pqxx
+    pq
     sodium
     pthread
     yaml-cpp
