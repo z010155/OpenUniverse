@@ -1,0 +1,6 @@
+[submodule "include/yaml-cpp"]
+	path = include/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
+[submodule "include/libpqxx"]
+	path = include/libpqxx
+	url = https://github.com/jtv/libpqxx
