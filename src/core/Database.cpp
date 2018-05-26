@@ -38,7 +38,10 @@ void Database::createAccount(std::string username, std::string password)
     t.commit();
 }
 
-void Database::createCharacter(DB::Account* account, std::string name, uint32_t predef1, uint32_t predef2, uint32_t predef3, uint32_t shirtColor, uint32_t shirtStyle, uint32_t pantsColor, uint32_t hairStyle, uint32_t hairColor, uint32_t lh, uint32_t rh, uint32_t eyebrowStyle, uint32_t eyeStyle, uint32_t mouthStyle)
+void Database::createCharacter(DB::Account* account, std::string name, uint32_t predef1, uint32_t predef2,
+                               uint32_t predef3, uint32_t shirtColor, uint32_t shirtStyle, uint32_t pantsColor,
+                               uint32_t hairStyle, uint32_t hairColor, uint32_t lh, uint32_t rh, uint32_t eyebrowStyle,
+                               uint32_t eyeStyle, uint32_t mouthStyle)
 {
     std::mt19937 rng;
     rng.seed(std::random_device()());

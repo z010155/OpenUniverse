@@ -62,6 +62,17 @@ void WorldServer::handleCharList(RakNet::BitStream* stream, Packet* p)
 void WorldServer::handleCharCreate(RakNet::BitStream* stream, Packet* p)
 {
     auto request = World::Packets::MinifigureCreate::deserialize(stream);
+    auto account = sessions->getSession(p->systemAddress);
+
+    db->createCharacter(account, Utils::wstringToString(request->name), request->predef1, request->predef2, 
+                        request->predef3, request->shirtColor, request->shirtStyle, request->pantsColor,
+                        request->hairStyle, request->hairColor, request->lh, request->rh, request->eyebrowStyle,
+                        request->eyeStyle, request->mouthStyle);
+
+    handleCharList(stream, p);
+
+    delete request;
+    delete account;
 }
 
 void WorldServer::serverStarted()

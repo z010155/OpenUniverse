@@ -26,7 +26,8 @@ public:
     ~Database();
 
     void createAccount(std::string, std::string);
-    void createCharacter(DB::Account*, std::string, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
+    void createCharacter(DB::Account*, std::string, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
+                         uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 
     DB::Account* authenticate(std::string, std::string);
     DB::Account* getAccount(std::string);
