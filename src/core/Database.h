@@ -2,7 +2,7 @@
 #define __LU_DATABASE_H__
 
 #include <sodium/crypto_pwhash.h>
-#include <pqxx/pqxx>
+#include "pqxx/pqxx"
 
 #include <string>
 #include <exception>

@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include <yaml-cpp/yaml.h>
+#include "yaml-cpp/yaml.h"
 
 #include "auth/AuthServer.h"
 #include "world/WorldServer.h"
