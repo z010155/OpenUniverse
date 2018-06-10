@@ -42,7 +42,7 @@ class ZoneChecksums:
     MoonBase = 0x043b01ad
     Portabello = 0x181507dd
     LegoClub = 0x02040138
-    CruxPrima = 0x4b17a399
+    CruxPrime = 0x4b17a399
     NexusTower = 0x9e4af43c
     Ninjago = 0x4d692c74
     FrakjawBattle = 0x09eb00ef
@@ -50,6 +50,35 @@ class ZoneChecksums:
 
 ZONE_CHECKSUMS = {
     1000: ZoneChecksums.VentureExplorer,
+    1001: ZoneChecksums.ReturnToVentureExplorer,
     1100: ZoneChecksums.AvantGardens,
-    1200: ZoneChecksums.NimbusStation
+    1101: ZoneChecksums.AvantGardensSurvival,
+    1102: ZoneChecksums.SpiderQueenBattle,
+    1150: ZoneChecksums.BlockYard,
+    1151: ZoneChecksums.AvantGrove,
+    1200: ZoneChecksums.NimbusStation,
+    1201: ZoneChecksums.PetCove,
+    1203: ZoneChecksums.VertigoLoop,
+    1204: ZoneChecksums.BattleOfNimbusStation,
+    1250: ZoneChecksums.NimbusRock,
+    1251: ZoneChecksums.NimbusIsle,
+    1260: None,  # Frostburgh
+    1300: ZoneChecksums.GnarledForest,
+    1302: ZoneChecksums.CanyonCove,
+    1303: ZoneChecksums.KeelhaulCanyon,
+    1350: ZoneChecksums.ChanteyShantey,
+    1400: ZoneChecksums.ForbiddenValley,
+    1402: ZoneChecksums.ForbiddenValleyDragon,
+    1403: ZoneChecksums.DragonmawChasm,
+    1450: ZoneChecksums.RavenBluff,
+    1600: ZoneChecksums.Starbase3001,
+    1601: ZoneChecksums.DeepFreeze,
+    1602: ZoneChecksums.RobotCity,
+    1603: ZoneChecksums.MoonBase,
+    1604: ZoneChecksums.Portabello,
+    1700: ZoneChecksums.LegoClub,
+    1800: ZoneChecksums.CruxPrime,
+    1900: ZoneChecksums.NexusTower,
+    2000: ZoneChecksums.Ninjago,
+    2001: ZoneChecksums.FrakjawBattle
 }

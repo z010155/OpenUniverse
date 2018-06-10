@@ -30,6 +30,7 @@ class WorldInfoPacket(Packet):
         stream.write(c_uint16(self.zone_id))
         stream.write(c_uint16(self.instance))
         stream.write(c_uint32(self.clone))
+        stream.write(c_uint32(self.checksum))
         stream.write(c_uint16(0))
         stream.write(c_float(self.position.x))
         stream.write(c_float(self.position.y))

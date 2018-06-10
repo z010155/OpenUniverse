@@ -1,3 +1,5 @@
+from xml.etree import ElementTree
+
 from peewee import DoesNotExist
 from pyraknet.messages import Address
 
@@ -6,10 +8,13 @@ from server.clone_manager import CloneManager
 from server.database.database import Database, Character
 from server.database.session_manager import SessionManager
 from server.enums import ZONE_CHECKSUMS
+from server.legodata import LegoData
 from server.module import Module
 from server.packets.world.character.character_create import CharacterCreateRequestPacket, CharacterCreateResponsePacket
 from server.packets.world.character.character_delete import CharacterDeleteRequestPacket, CharacterDeleteResponsePacket
 from server.packets.world.character.character_list import CharacterListPacket
+from server.packets.world.detailed_info import DetailedUserInfoPacket
+from server.packets.world.game_message import ServerGameMessage
 from server.packets.world.load_complete import ClientsideLoadCompletePacket
 from server.packets.world.world_info import WorldInfoPacket
 from server.packets.world.world_join import WorldJoinRequestPacket
@@ -82,13 +87,100 @@ class CharacterModule(Module):
         char = [x for x in clone.players if x.user.user_id == session['user_id']][0]
         zone = ZoneReader.parse_zone(packet.zone_id)
 
+        ldf = LegoData()
+
+        ldf.set('chatmode', 1, 0)
+        ldf.set('editor_enabled', 7, False)
+        ldf.set('editor_level', 1, 0)
+        ldf.set('gmlevel', 1, 0)
+        ldf.set('levelid', 8, packet.zone_id)
+        ldf.set('name', 0, char.name)
+        ldf.set('objid', 9, char.character_id)
+        ldf.set('reputation', 8, 0)
+        ldf.set('template', 1, 1)
+        ldf.set('accountID', 8, char.user.user_id)
+
+        xml = ElementTree.TreeBuilder()
+
+        xml.start('obj', {'v': '1'})
+
+        xml.start('buff', {})
+        xml.end('buff')
+
+        xml.start('skill', {})
+        xml.end('skill')
+
+        xml.start('inv', {})
+        xml.start('bag', {})
+        xml.start('b', {
+            't': '0',
+            'm': '5'  # TODO: set using var from db
+        })
+        xml.end('b')
+        xml.end('bag')
+
+        xml.start('items', {})
+        xml.start('in', {})
+
+        # TODO: items here
+
+        xml.end('in')
+        xml.end('items')
+        xml.end('inv')
+
+        xml.start('mf', {})
+        xml.end('mf')
+
+        xml.start('char', {
+            'cc': '0'  # TODO: set using var from db
+        })
+        xml.end('char')
+
+        xml.start('lvl', {
+            'l': '1'  # TODO: set using var from db
+        })
+        xml.end('lvl')
+
+        xml.start('flag', {})
+        xml.end('flag')
+
+        xml.start('pet', {})
+        xml.end('pet')
+
+        xml.start('mis', {})
+        xml.start('cur', {})
+
+        # TODO: in progress missions here
+
+        xml.end('cur')
+        xml.start('done', {})
+
+        # TODO: completed missions here
+
+        xml.end('done')
+        xml.end('mis')
+
+        xml.start('mnt', {})
+        xml.end('mnt')
+
+        xml.start('dest', {})
+        xml.end('dest')
+
+        xml.end('obj')
+
+        ldf.set('xmlData', 13, xml.close())
+
+        res = DetailedUserInfoPacket(ldf)
+
+        self.server.send(res, address)
+
         components = [
             ControllablePhysicsComponent(player=True, position=zone.spawnpoint, rotation=zone.spawnpoint_rotation),
             DestructibleComponent(),
             StatsComponent(),
             CharacterComponent(shirt_color=char.shirt_color, shirt_style=char.shirt_style, hair_style=char.hair_style,
                                hair_color=char.hair_color, pants_color=char.pants_color,
-                               eyebrow_style=char.eyebrow_style, eye_style=char.eye_style,
+                               eyebrow_style=char.eyebrow_style, eye_style=char.eye_style, mouth_style=char.mouth_style,
                                account_id=char.user.user_id),
             InventoryComponent(items=[]),
             ScriptComponent(),
@@ -100,3 +192,6 @@ class CharacterModule(Module):
         player = BaseData(char.character_id, 1, char.name, 0, components)
 
         clone.rm.construct(player, True)
+
+        self.server.send(ServerGameMessage(char.character_id, 0x066a, b''), address)
+        self.server.send(ServerGameMessage(char.character_id, 0x01fd, b''), address)
