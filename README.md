@@ -139,7 +139,7 @@ Contributions are always welcome!
 
 ## License
 
-OpenUniverse is licensed under the MIT license.
+OpenUniverse is licensed under the GNU Affero General Public License.
 
 ## Disclaimer
 
